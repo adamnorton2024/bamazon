@@ -67,14 +67,17 @@ function purchase(){
         connection.query(query, { item_id: answer.id}, function(err, res){
             if(err) throw err;
             if(res[0].stock_quantity >= answer.quantity){
-                console.log("\nYour purchase total is: $" + (res[0].price * answer.quantity) + "\n ");
+                var saleAmount = res[0].price * answer.quantity;
+                var salesTotal = res[0].product_sales + saleAmount;
+                console.log("\nYour purchase total is: $" + saleAmount + "\n ");
                 var newQuantity = res[0].stock_quantity - answer.quantity;
                 var itemToUpdate = res[0].item_id;
                 connection.query(
                     "UPDATE products SET ? WHERE ?",
                     [
                         {
-                            stock_quantity: newQuantity
+                            stock_quantity: newQuantity,
+                            product_sales: salesTotal
                         },
                         {
                             item_id: itemToUpdate
