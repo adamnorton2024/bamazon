@@ -65,3 +65,41 @@ function lowInventory(){
         start();
     })
 };
+
+function addInventory(){
+    inquirer.prompt([
+        {
+            name:"item",
+            type: "input",
+            message: "Enter the ID of the item you'd like to add inventory to?"
+        },
+        {
+            name:"quantity",
+            type: "input",
+            message: "How many would you like to add?"
+        }
+    ]).then(function(answer){
+        var query = "SELECT * FROM products WHERE ?";
+        connection.query(query, { item_id: answer.item }, function(err, res){
+            var newQuantity = parseInt(res[0].stock_quantity) + parseInt(answer.quantity);
+            console.log("new quantity should be " + newQuantity);
+            var itemToUpdate = res[0].item_id;
+            connection.query(
+                "UPDATE products SET ? WHERE ?",
+                [
+                    {
+                        stock_quantity: newQuantity
+                    },
+                    {
+                        item_id: itemToUpdate
+                    }
+                ], function(error){
+                    if(error)throw err;
+                    console.log("\nInventory Added\n")
+                    console.table(res);
+                    start();
+                }
+            );
+        })
+    })
+};
