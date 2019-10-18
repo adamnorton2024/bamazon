@@ -11,6 +11,89 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err){
     if (err) throw err;
-    console.log("Connected as id " + connection.threadId + "\n");
-    connection.end();
+    start();
+
+    
 });
+
+function start(){
+    connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        store();
+    });
+}
+
+function store(){
+
+    
+    
+    inquirer.prompt(
+        {
+            name: "action",
+            type: "list",
+            message: "What would you like to do?",
+            choices: [
+                "Make a purchase",
+                "Exit"
+            ]
+        })
+        .then(function(answer){
+            switch (answer.action) {
+                case "Make a purchase":
+                    purchase();
+                    break;
+                case "Exit":
+                    connection.end();
+                    break;
+            }
+        });
+};
+
+function purchase(){
+    inquirer.prompt([
+        {
+            name: "id",
+            type: "input",
+            message: "Type the ID of the item you'd like to purchase:"
+        },
+        {
+            name: "quantity",
+            type: "input",
+            message: "How many would you like to buy?"
+        }
+    ]).then(function(answer) {
+        var query = "SELECT * FROM products WHERE ?";
+        connection.query(query, { item_id: answer.id}, function(err, res){
+            if(err) throw err;
+            if(res[0].stock_quantity >= answer.quantity){
+                console.log("\nYour purchase total is: $" + (res[0].price * answer.quantity) + "\n ");
+                var newQuantity = res[0].stock_quantity - answer.quantity;
+                var itemToUpdate = res[0].item_id;
+                connection.query(
+                    "UPDATE products SET ? WHERE ?",
+                    [
+                        {
+                            stock_quantity: newQuantity
+                        },
+                        {
+                            item_id: itemToUpdate
+                        }
+                    ],function(error){
+                        if(error) throw err;
+                        start();
+                    }
+                );
+                
+                //updateQuantity(newQuantity, res[0].item_id);
+            } else {
+                console.log("\nInsufficient Quantity in stock! Please try another order.\n")
+                start();
+            }
+
+        })
+    }
+
+)};
+
+
