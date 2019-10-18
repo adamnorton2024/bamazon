@@ -96,7 +96,7 @@ function addInventory(){
                 ], function(error){
                     if(error)throw err;
                     console.log("\nInventory Added\n")
-                    console.table(res);
+                    //console.table(res);
                     start();
                 }
             );
