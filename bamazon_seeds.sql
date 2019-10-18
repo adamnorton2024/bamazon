@@ -14,3 +14,14 @@ INSERT INTO products (product_name, department_name, price, stock_quantity)
     ("Office Trash Bin", "Furniture", 9.99, 256 );
 
     SELECT * FROM products;
+
+INSERT INTO departments (department_name, over_head_costs)
+    VALUES
+    ("Video Games", 5000),
+    ("Electronics", 12000),
+    ("Food", 2500),
+    ("Alcohol", 3000),
+    ("Furniture", 1500);
+
+    SELECT * FROM departments;
+
