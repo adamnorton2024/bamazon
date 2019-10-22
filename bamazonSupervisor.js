@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "C5pkhi6r12!",
+    password: "C5pkhi6r",
     database: "bamazon"
 });
 
@@ -42,9 +42,9 @@ function start(){
 
 
 function viewSales(){
-    var query = "SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.product_sales, (products.product_sales - departments.over_head_costs) AS total_profit ";
+    var query = "SELECT departments.department_name,  (sum(products.product_sales) - min(departments.over_head_costs)) AS total_profit ";
     query += "FROM departments INNER JOIN products ON (departments.department_name = products.department_name)";
-    //query += "GROUP BY department_name";
+    query += "GROUP BY department_name";
 
     connection.query(query, function (err, res){
         if(err) throw err;
